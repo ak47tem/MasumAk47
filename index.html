@@ -1,54 +1,63 @@
+
 <!DOCTYPE html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>MasumAk47</title>
+    <title>MasumAk47 - AI Music Studio</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;900&family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
       :root {
-        --bg-main: #0a0a0a;
-        --bg-card: #171717;
-        --border-color: #262626;
+        --bg-main: #070707;
+        --bg-card: #121212;
+        --border-color: #1f1f1f;
         --text-primary: #ffffff;
-        --text-secondary: #a3a3a3;
-        --accent: #db2777; /* Pink-600 */
+        --text-secondary: #8a8a8a;
+        --accent: #ec4899; 
       }
       
       body {
-        font-family: 'Inter', sans-serif;
+        font-family: 'Inter', 'Hind Siliguri', sans-serif;
         background-color: var(--bg-main);
         color: var(--text-primary);
-        antialiased;
+        overflow: hidden;
       }
 
-      /* Enhanced pink gradient mesh */
       .bg-mesh {
         background-image: 
-          radial-gradient(at 0% 0%, rgba(236, 72, 153, 0.25) 0px, transparent 55%),
-          radial-gradient(at 100% 0%, rgba(219, 39, 119, 0.15) 0px, transparent 50%);
+          radial-gradient(at 0% 0%, rgba(236, 72, 153, 0.18) 0px, transparent 50%),
+          radial-gradient(at 100% 100%, rgba(147, 51, 234, 0.12) 0px, transparent 50%),
+          radial-gradient(at 50% 50%, rgba(10, 10, 10, 1) 0px, transparent 100%);
       }
       
-      .glass-panel {
-        background: var(--bg-card);
-        border: 1px solid var(--border-color);
+      .custom-scrollbar::-webkit-scrollbar {
+        width: 5px;
       }
-      
-      /* Clean Scrollbar */
-      ::-webkit-scrollbar {
-        width: 6px;
+      .custom-scrollbar::-webkit-scrollbar-track {
+        background: rgba(0,0,0,0.1);
       }
-      ::-webkit-scrollbar-track {
-        background: transparent;
+      .custom-scrollbar::-webkit-scrollbar-thumb {
+        background: #262626;
+        border-radius: 10px;
       }
-      ::-webkit-scrollbar-thumb {
-        background: #3f3f46;
-        border-radius: 3px;
+      .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+        background: #ec4899;
       }
-      ::-webkit-scrollbar-thumb:hover {
-        background: #ec4899; /* Pink-500 hover */
+
+      /* Glowing MasumAk47 Highlight */
+      .brand-glow {
+        text-shadow: 0 0 20px rgba(236, 72, 153, 0.4);
+      }
+
+      .animate-float {
+        animation: float 6s ease-in-out infinite;
+      }
+
+      @keyframes float {
+        0%, 100% { transform: translateY(0); }
+        50% { transform: translateY(-10px); }
       }
     </style>
   <script type="importmap">
@@ -64,5 +73,6 @@
 </head>
   <body>
     <div id="root"></div>
+    <script type="module" src="./index.tsx"></script>
   </body>
 </html>
