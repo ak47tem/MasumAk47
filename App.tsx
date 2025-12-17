@@ -1,15 +1,15 @@
 
 import React, { useState, useEffect } from 'react';
-import { ControlPanel } from './components/ControlPanel';
-import { LyricsDisplay } from './components/LyricsDisplay';
-import { AudioPlayer } from './components/AudioPlayer';
-import { HelpCenter } from './components/HelpCenter';
+import { ControlPanel } from './components/ControlPanel.tsx';
+import { LyricsDisplay } from './components/LyricsDisplay.tsx';
+import { AudioPlayer } from './components/AudioPlayer.tsx';
+import { HelpCenter } from './components/HelpCenter.tsx';
 import { 
     MusicIcon, DownloadIcon, PlusIcon, TrashIcon, LibraryIcon, 
     HomeIcon, SearchIcon, BellIcon, UserIcon, GridIcon, SparklesIcon, HelpIcon
-} from './components/Icons';
-import { SongRequest, GenerationState, GeneratedSong } from './types';
-import { generateSongLyrics, generateAlbumArt, generateSpeechStream, analyzeCustomLyrics, createAudioBufferFromBytes } from './services/geminiService';
+} from './components/Icons.tsx';
+import { SongRequest, GenerationState, GeneratedSong } from './types.ts';
+import { generateSongLyrics, generateAlbumArt, generateSpeechStream, analyzeCustomLyrics, createAudioBufferFromBytes } from './services/geminiService.ts';
 
 type ViewState = 'home' | 'create' | 'studio' | 'library' | 'search' | 'notifications' | 'profile' | 'help';
 
@@ -32,7 +32,7 @@ const App: React.FC = () => {
         setCredits(prev => Math.max(prev, 50));
         localStorage.setItem('masum_last_date', today);
     }
-    // Auto-login for demo purposes or keep as false
+    // Set logged in by default for a smoother experience on public pages
     setIsLoggedIn(true); 
   }, []);
 
@@ -120,7 +120,7 @@ const App: React.FC = () => {
             console.error(e);
             updateSong(song.id, { status: 'error' });
             if (song.id === batchSongs[0].id) {
-                setError("Production error. The creative engine encountered an issue.");
+                setError("Production error. Please refresh and try again.");
                 setGlobalStatus(GenerationState.ERROR);
             }
         }
@@ -169,7 +169,7 @@ const App: React.FC = () => {
               return (
                   <div className="p-6 md:p-10 max-w-5xl mx-auto w-full animate-in fade-in duration-500 overflow-y-auto custom-scrollbar">
                       <div className="mb-8 text-center md:text-left">
-                          <div className="text-pink-500 font-black uppercase tracking-[0.2em] text-[10px] mb-2">Master Production Hub</div>
+                          <div className="text-pink-500 font-black uppercase tracking-[0.2em] text-[10px] mb-2">Authenticated Production Hub</div>
                           <h1 className="text-4xl font-bold mb-2 tracking-tight">স্বাগতম, <span className="text-transparent bg-clip-text bg-gradient-to-r from-pink-500 to-purple-500 drop-shadow-[0_0_10px_rgba(236,72,153,0.3)]">MasumAk47</span></h1>
                           <p className="text-zinc-400">আজ কি নতুন গান তৈরি করবেন?</p>
                       </div>
@@ -217,10 +217,10 @@ const App: React.FC = () => {
               if (!activeSong) return (
                   <div className="flex flex-col items-center justify-center h-full text-center p-6">
                       <div className="w-20 h-20 rounded-3xl bg-zinc-900 flex items-center justify-center mb-6 border border-zinc-800"><MusicIcon className="w-10 h-10 text-zinc-600" /></div>
-                      <h2 className="text-2xl font-bold mb-4">কোনো গান সিলেক্ট করা নেই</h2>
+                      <h2 className="text-2xl font-bold mb-4">No track selected</h2>
                       <div className="flex gap-4">
-                          <button onClick={() => navigateTo('create')} className="px-8 py-4 bg-gradient-to-r from-pink-600 to-purple-600 rounded-2xl font-bold text-sm text-white hover:from-pink-500 hover:to-purple-500 transition-all shadow-xl shadow-pink-600/20 active:scale-95">নতুন গান বানান</button>
-                          <button onClick={() => navigateTo('library')} className="px-8 py-4 bg-zinc-800 rounded-2xl font-bold text-sm text-white hover:bg-zinc-700 transition-all active:scale-95">লাইব্রেরিতে যান</button>
+                          <button onClick={() => navigateTo('create')} className="px-8 py-4 bg-gradient-to-r from-pink-600 to-purple-600 rounded-2xl font-bold text-sm text-white hover:from-pink-500 hover:to-purple-500 transition-all shadow-xl shadow-pink-600/20 active:scale-95">Create New</button>
+                          <button onClick={() => navigateTo('library')} className="px-8 py-4 bg-zinc-800 rounded-2xl font-bold text-sm text-white hover:bg-zinc-700 transition-all active:scale-95">Library</button>
                       </div>
                   </div>
               );
@@ -277,8 +277,8 @@ const App: React.FC = () => {
                       {history.length === 0 ? (
                            <div className="flex flex-col items-center justify-center py-32 text-center text-zinc-600">
                                <LibraryIcon className="w-20 h-20 mb-6 opacity-10" />
-                               <p className="text-lg">আপনার লাইব্রেরি বর্তমানে খালি।</p>
-                               <button onClick={() => navigateTo('create')} className="mt-4 text-pink-500 font-bold hover:underline">প্রথম গানটি তৈরি করুন</button>
+                               <p className="text-lg">Your library is currently empty.</p>
+                               <button onClick={() => navigateTo('create')} className="mt-4 text-pink-500 font-bold hover:underline">Start creating now</button>
                            </div>
                       ) : (
                           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
@@ -314,7 +314,6 @@ const App: React.FC = () => {
 
   return (
     <div className="flex h-screen bg-mesh text-white selection:bg-pink-500 selection:text-white overflow-hidden font-sans">
-      {/* Sidebar with Highlighted Branding */}
       <aside className={`fixed inset-y-0 left-0 z-50 w-64 bg-[#0a0a0a] border-r border-zinc-800 transform transition-transform duration-300 ease-in-out ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full'} md:relative md:translate-x-0 flex flex-col shrink-0 shadow-2xl`}>
           <div className="p-5 border-b border-zinc-800 flex items-center justify-between h-20">
               <div className="flex items-center gap-3 font-black text-xl">
@@ -348,7 +347,6 @@ const App: React.FC = () => {
           </div>
       </aside>
 
-      {/* Main Content Area */}
       <main className="flex-1 flex flex-col h-full relative w-full overflow-hidden">
           <header className="h-16 border-b border-zinc-800 flex items-center px-6 justify-between bg-[#0a0a0a]/90 backdrop-blur-xl z-20 shrink-0">
              <button onClick={() => setIsSidebarOpen(true)} className="md:hidden text-zinc-400 hover:text-pink-500"><GridIcon className="w-6 h-6" /></button>
@@ -378,7 +376,6 @@ const App: React.FC = () => {
               ) : renderMainContent()}
           </div>
 
-          {/* Floating Help Access */}
           <button 
             onClick={() => navigateTo('help')}
             className="fixed bottom-8 right-8 w-14 h-14 bg-gradient-to-r from-pink-600 to-purple-600 text-white rounded-2xl shadow-2xl flex items-center justify-center hover:scale-110 active:scale-95 transition-all z-40 group border-4 border-[#0a0a0a] shadow-pink-600/30"
@@ -389,7 +386,6 @@ const App: React.FC = () => {
           </button>
       </main>
 
-      {/* Account Modal */}
       {showLoginModal && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/90 backdrop-blur-md p-4 animate-in fade-in duration-300">
             <div className="w-full max-w-sm bg-[#171717] border border-zinc-800 rounded-[2.5rem] p-10 shadow-2xl relative overflow-hidden">
@@ -400,7 +396,7 @@ const App: React.FC = () => {
                         <UserIcon className="w-10 h-10 text-white" />
                     </div>
                     <h2 className="text-3xl font-black text-white mb-3 tracking-tight">MasumAk47 Account</h2>
-                    <p className="text-sm text-zinc-500 leading-relaxed px-4">আপনার প্রজেক্টগুলো সেভ করতে এবং AI ইঞ্জিন ব্যবহার করতে লগইন করুন।</p>
+                    <p className="text-sm text-zinc-500 leading-relaxed px-4">Login to save your projects and access the AI Engine.</p>
                 </div>
                 <button onClick={() => { setIsLoggedIn(true); setShowLoginModal(false); }} className="w-full py-5 bg-gradient-to-r from-pink-600 to-purple-600 text-white rounded-[1.5rem] font-bold text-sm hover:from-pink-500 hover:to-purple-500 transition-all active:scale-95 shadow-xl shadow-pink-600/30">লগইন / সাইন আপ</button>
             </div>

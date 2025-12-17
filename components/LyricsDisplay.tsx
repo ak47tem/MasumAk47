@@ -1,7 +1,7 @@
 
 import React, { useState } from 'react';
-import { SongData } from '../types';
-import { HeartIcon, ThumbUpIcon, CopyIcon, SendIcon } from './Icons';
+import { SongData } from '../types.ts';
+import { HeartIcon, ThumbUpIcon, CopyIcon, SendIcon } from './Icons.tsx';
 
 interface LyricsDisplayProps {
   song: SongData;
@@ -22,7 +22,6 @@ export const LyricsDisplay: React.FC<LyricsDisplayProps> = ({ song, onRefine }) 
 
   return (
     <div className="bg-[#171717] border border-zinc-800 rounded-2xl h-full min-h-[500px] flex flex-col shadow-xl">
-        {/* Tabs */}
         <div className="flex border-b border-zinc-800">
             <button 
                onClick={() => setActiveTab('lyrics')}
@@ -40,7 +39,6 @@ export const LyricsDisplay: React.FC<LyricsDisplayProps> = ({ song, onRefine }) 
             </button>
         </div>
 
-        {/* Content */}
         <div className="flex-1 overflow-y-auto p-6 custom-scrollbar">
             {activeTab === 'lyrics' ? (
                 <div className="space-y-8 text-center md:text-left">
@@ -81,28 +79,10 @@ export const LyricsDisplay: React.FC<LyricsDisplayProps> = ({ song, onRefine }) 
                             </div>
                         </div>
                     </div>
-
-                    <div className="p-4 bg-zinc-900/50 rounded-xl border border-zinc-800">
-                         <h3 className="text-xs font-bold text-zinc-500 uppercase tracking-widest mb-4">Composition Map</h3>
-                         <div className="space-y-2">
-                             {song.lyrics.map((section, idx) => (
-                                 <div key={idx} className="flex items-center gap-3">
-                                     <div className="w-6 h-6 rounded-full bg-zinc-800 flex items-center justify-center text-xs font-bold text-zinc-500">
-                                         {idx + 1}
-                                     </div>
-                                     <div className="flex-1 h-2 bg-zinc-800 rounded-full overflow-hidden">
-                                         <div className="h-full bg-gradient-to-r from-pink-600 to-purple-600 opacity-50 w-full"></div>
-                                     </div>
-                                     <span className="text-xs text-pink-400 font-bold uppercase">{section.type}</span>
-                                 </div>
-                             ))}
-                         </div>
-                    </div>
                 </div>
             )}
         </div>
 
-        {/* Footer Input */}
         <div className="p-4 border-t border-zinc-800 bg-zinc-900/50">
              <form 
                 onSubmit={(e) => {

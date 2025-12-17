@@ -8,6 +8,10 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;900&family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script>
+      // Shim process.env to prevent crashes on static hosts like GitHub Pages
+      window.process = { env: { API_KEY: "" } };
+    </script>
     <style>
       :root {
         --bg-main: #070707;
@@ -46,9 +50,8 @@
         background: #ec4899;
       }
 
-      /* Glowing MasumAk47 Highlight */
       .brand-glow {
-        text-shadow: 0 0 20px rgba(236, 72, 153, 0.4);
+        text-shadow: 0 0 15px rgba(236, 72, 153, 0.5);
       }
 
       .animate-float {

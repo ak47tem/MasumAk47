@@ -1,8 +1,8 @@
 
 import React, { useState } from 'react';
-import { SongRequest, GenerationState } from '../types';
-import { SparklesIcon, DiceIcon, MagicIcon, UndoIcon, MusicIcon, GridIcon } from './Icons';
-import { analyzeCustomLyrics } from '../services/geminiService';
+import { SongRequest, GenerationState } from '../types.ts';
+import { SparklesIcon, DiceIcon, MagicIcon, UndoIcon, MusicIcon, GridIcon } from './Icons.tsx';
+import { analyzeCustomLyrics } from '../services/geminiService.ts';
 
 interface ControlPanelProps {
   onSubmit: (request: SongRequest) => void;
@@ -22,29 +22,18 @@ const CREATIVE_PROMPTS = [
 
 export const ControlPanel: React.FC<ControlPanelProps> = ({ onSubmit, status, variant = 'hero' }) => {
   const [mode, setMode] = useState<'simple' | 'custom' | 'studio'>('simple');
-  
-  // Simple Mode State
   const [description, setDescription] = useState('');
-
-  // Studio Mode State
   const [studioGenre, setStudioGenre] = useState('Pop');
   const [studioMood, setStudioMood] = useState('Happy');
   const [studioTempo, setStudioTempo] = useState(120);
   const [studioTopic, setStudioTopic] = useState('');
-
-  // Custom Mode State
   const [customLyrics, setCustomLyrics] = useState('');
   const [customStyle, setCustomStyle] = useState('');
   const [customTitle, setCustomTitle] = useState('');
   const [autoEnhance, setAutoEnhance] = useState(false);
 
-  // Enhancement State
-  const [backupLyrics, setBackupLyrics] = useState<string | null>(null);
-  const [isEnhancing, setIsEnhancing] = useState(false);
-
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    
     if (mode === 'custom') {
         if (!customLyrics.trim() && !customStyle.trim()) return;
         onSubmit({
@@ -107,8 +96,6 @@ export const ControlPanel: React.FC<ControlPanelProps> = ({ onSubmit, status, va
 
   return (
     <div className="w-full flex flex-col gap-6 animate-in fade-in duration-500">
-      
-      {/* Tab Switcher */}
       <div className="self-center flex items-center gap-1 bg-zinc-900/80 p-1.5 rounded-2xl border border-zinc-800 backdrop-blur-sm">
           <button type="button" onClick={() => setMode('simple')} className={`px-4 py-2 rounded-xl text-xs font-black uppercase tracking-widest transition-all ${mode === 'simple' ? 'bg-gradient-to-r from-pink-600 to-purple-600 text-white shadow-lg' : 'text-zinc-500 hover:text-zinc-300'}`}>Simple</button>
           <button type="button" onClick={() => setMode('studio')} className={`px-4 py-2 rounded-xl text-xs font-black uppercase tracking-widest transition-all ${mode === 'studio' ? 'bg-gradient-to-r from-pink-600 to-purple-600 text-white shadow-lg' : 'text-zinc-500 hover:text-zinc-300'}`}>Studio</button>
@@ -166,13 +153,7 @@ export const ControlPanel: React.FC<ControlPanelProps> = ({ onSubmit, status, va
                             onChange={(e) => setStudioTempo(parseInt(e.target.value))}
                             className="w-full h-2 bg-zinc-800 rounded-lg appearance-none cursor-pointer accent-pink-600"
                         />
-                        <div className="flex justify-between text-[10px] font-bold text-zinc-700 px-1">
-                            <span>ADAGIO (60)</span>
-                            <span>MODERATO</span>
-                            <span>PRESTO (200)</span>
-                        </div>
                     </div>
-
                     <div className="space-y-3">
                          <label className="text-[10px] font-black text-zinc-600 uppercase tracking-widest ml-1">Project Topic</label>
                          <input 
@@ -181,7 +162,6 @@ export const ControlPanel: React.FC<ControlPanelProps> = ({ onSubmit, status, va
                             className="w-full h-14 bg-zinc-900 border border-zinc-800 rounded-2xl px-5 text-sm text-white focus:border-pink-500 transition-all"
                          />
                     </div>
-
                     <button type="submit" disabled={isGenerating} className="w-full h-16 bg-gradient-to-r from-pink-600 to-purple-600 text-white rounded-2xl font-black text-sm uppercase tracking-widest hover:from-pink-500 hover:to-purple-500 transition-all shadow-xl shadow-pink-600/30 flex items-center justify-center gap-3 active:scale-95">
                          {isGenerating ? <div className="w-5 h-5 border-2 border-white/50 border-t-white rounded-full animate-spin"></div> : <SparklesIcon className="w-6 h-6" />}
                          <span>Generate Production</span>

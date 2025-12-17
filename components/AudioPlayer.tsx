@@ -1,8 +1,8 @@
 
 import React, { useState, useEffect, useRef } from 'react';
-import { PlayIcon, PauseIcon, DownloadIcon } from './Icons';
-import { audioBufferToWav } from '../utils/audioUtils';
-import { BeatEngine } from '../utils/beatEngine';
+import { PlayIcon, PauseIcon, DownloadIcon } from './Icons.tsx';
+import { audioBufferToWav } from '../utils/audioUtils.ts';
+import { BeatEngine } from '../utils/beatEngine.ts';
 
 interface AudioPlayerProps {
   audioBuffer: AudioBuffer | undefined;
@@ -55,7 +55,6 @@ export const AudioPlayer: React.FC<AudioPlayerProps> = ({ audioBuffer, title, st
           beatEngineRef.current = new BeatEngine(ctx);
       }
 
-      // Apply dynamic parameters
       beatEngineRef.current.setTempo(tempo || 120);
       beatEngineRef.current.setGenre(style || 'Pop');
 
