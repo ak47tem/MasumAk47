@@ -8,29 +8,48 @@ export const generateSongLyrics = async (
   topic: string,
   genre: string,
   mood: string,
-  language: string
+  language: string,
+  version: number
 ): Promise<SongData> => {
-  const prompt = `You are an advanced AI Music Composition Engine (Suno-style).
+  const versionDescriptions = [
+    "Basic structure and simple metaphors.",
+    "Standard song structure with better flow.",
+    "Professional arrangement with bridge and complex rhyming.",
+    "Advanced artistic expression and multi-layered themes.",
+    "Ultra-high-end masterpiece with cinematic detail and intricate musicality."
+  ];
+
+  const prompt = `You are an advanced AI Music Composition Engine.
+  Task: Create a song at Quality Version ${version}/5.
+  Quality Intent: ${versionDescriptions[version - 1]}
   Topic: "${topic}"
   Genre: "${genre}"
   Mood: "${mood}"
   Language: "${language}"
-  Return JSON structure with title, style, mood, and lyrics array.`;
+  
+  Return JSON structure with title, style, mood, and lyrics array. Ensure the complexity matches Version ${version}.`;
 
-  return fetchFormattedLyrics(prompt, language);
+  const songData = await fetchFormattedLyrics(prompt, language);
+  // Fix: Adding missing required language property
+  return { ...songData, version, language };
 };
 
 export const analyzeCustomLyrics = async (
   lyrics: string,
   genre: string,
   title: string,
+  version: number,
   autoEnhance: boolean = false
 ): Promise<SongData> => {
-  const prompt = `Analyze and structure these lyrics: "${lyrics}". Title: "${title}", Genre: "${genre}". AutoEnhance: ${autoEnhance}. Return JSON.`;
-  return fetchFormattedLyrics(prompt, "Auto");
+  const prompt = `Analyze and structure these lyrics: "${lyrics}". Title: "${title}", Genre: "${genre}". 
+  Apply enhancement level: Version ${version}/5. 
+  AutoEnhance: ${autoEnhance}. Return JSON.`;
+  const songData = await fetchFormattedLyrics(prompt, "Auto");
+  // Fix: Adding missing required language property
+  return { ...songData, version, language: "Auto" };
 };
 
-async function fetchFormattedLyrics(prompt: string, language: string): Promise<SongData> {
+async function fetchFormattedLyrics(prompt: string, language: string): Promise<Omit<SongData, 'language' | 'version'>> {
   try {
     const response = await ai.models.generateContent({
       model: "gemini-3-flash-preview",
@@ -60,16 +79,14 @@ async function fetchFormattedLyrics(prompt: string, language: string): Promise<S
 
     const text = response.text;
     if (!text) throw new Error("No response");
-    const data = JSON.parse(text) as Omit<SongData, 'language'>;
-    return { ...data, language };
+    return JSON.parse(text);
   } catch (error) {
     console.error(error);
     return {
         title: "Untitled Track",
         style: "Experimental",
         mood: "Neutral",
-        lyrics: [{ type: "Verse", content: "Error loading lyrics." }],
-        language: language
+        lyrics: [{ type: "Verse", content: "Error loading lyrics." }]
     };
   }
 }

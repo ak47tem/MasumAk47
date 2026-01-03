@@ -2,7 +2,6 @@
 import React, { useState } from 'react';
 import { SongRequest, GenerationState } from '../types.ts';
 import { SparklesIcon, DiceIcon, MagicIcon, UndoIcon, MusicIcon, GridIcon } from './Icons.tsx';
-import { analyzeCustomLyrics } from '../services/geminiService.ts';
 
 interface ControlPanelProps {
   onSubmit: (request: SongRequest) => void;
@@ -30,6 +29,7 @@ export const ControlPanel: React.FC<ControlPanelProps> = ({ onSubmit, status, va
   const [customLyrics, setCustomLyrics] = useState('');
   const [customStyle, setCustomStyle] = useState('');
   const [customTitle, setCustomTitle] = useState('');
+  const [version, setVersion] = useState(3);
   const [autoEnhance, setAutoEnhance] = useState(false);
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -41,6 +41,7 @@ export const ControlPanel: React.FC<ControlPanelProps> = ({ onSubmit, status, va
             customLyrics,
             genre: customStyle || 'Auto-Detect',
             topic: customTitle || undefined,
+            version,
             autoEnhance
         });
     } else if (mode === 'studio') {
@@ -49,7 +50,8 @@ export const ControlPanel: React.FC<ControlPanelProps> = ({ onSubmit, status, va
             topic: studioTopic || "Studio Production",
             genre: studioGenre,
             mood: studioMood,
-            tempo: studioTempo
+            tempo: studioTempo,
+            version
         });
     } else {
         if (!description.trim()) return;
@@ -57,7 +59,8 @@ export const ControlPanel: React.FC<ControlPanelProps> = ({ onSubmit, status, va
             mode: 'ai',
             topic: description,
             genre: 'Auto-Detect',
-            mood: 'Auto-Detect'
+            mood: 'Auto-Detect',
+            version
         });
         if (variant === 'compact') setDescription('');
     }
@@ -70,9 +73,36 @@ export const ControlPanel: React.FC<ControlPanelProps> = ({ onSubmit, status, va
 
   const isGenerating = status !== GenerationState.IDLE && status !== GenerationState.COMPLETED && status !== GenerationState.ERROR;
 
+  const VersionSelector = () => (
+    <div className="flex flex-col gap-2">
+        <div className="flex justify-between items-center px-1">
+            <label className="text-[10px] font-black text-zinc-600 uppercase tracking-widest">Model Version</label>
+            <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${version >= 4 ? 'bg-pink-500 text-white' : 'bg-zinc-800 text-zinc-400'}`}>
+                {version === 1 && "V1: Basic"}
+                {version === 2 && "V2: Standard"}
+                {version === 3 && "V3: Professional"}
+                {version === 4 && "V4: Advanced"}
+                {version === 5 && "V5: Ultra HD"}
+            </span>
+        </div>
+        <div className="flex gap-1 bg-zinc-900 p-1 rounded-xl border border-zinc-800">
+            {[1, 2, 3, 4, 5].map((v) => (
+                <button
+                    key={v}
+                    type="button"
+                    onClick={() => setVersion(v)}
+                    className={`flex-1 py-1.5 rounded-lg text-xs font-black transition-all ${version === v ? 'bg-gradient-to-r from-pink-600 to-purple-600 text-white shadow-lg' : 'text-zinc-500 hover:text-zinc-300'}`}
+                >
+                    V{v}
+                </button>
+            ))}
+        </div>
+    </div>
+  );
+
   if (variant === 'compact') {
     return (
-      <form onSubmit={handleSubmit} className="w-full max-w-xl flex items-center gap-2">
+      <form onSubmit={handleSubmit} className="w-full max-w-xl flex items-center gap-3">
         <div className="relative flex-1 group">
            <input
               type="text"
@@ -85,6 +115,9 @@ export const ControlPanel: React.FC<ControlPanelProps> = ({ onSubmit, status, va
            <button type="button" onClick={handleSurpriseMe} className="absolute right-2 top-1/2 -translate-y-1/2 text-zinc-500 hover:text-pink-500">
              <DiceIcon className="w-4 h-4" />
            </button>
+        </div>
+        <div className="w-32 hidden sm:block">
+            <VersionSelector />
         </div>
         <button type="submit" disabled={isGenerating || !description.trim()} className="h-10 px-4 bg-gradient-to-r from-pink-600 to-purple-600 text-white rounded-full font-bold text-xs hover:from-pink-500 hover:to-purple-500 transition-all active:scale-95 disabled:opacity-50 flex items-center gap-2 shadow-lg shadow-pink-600/20">
             {isGenerating ? <div className="w-3 h-3 border-2 border-white/50 border-t-white rounded-full animate-spin"></div> : <SparklesIcon className="w-4 h-4" />}
@@ -104,19 +137,24 @@ export const ControlPanel: React.FC<ControlPanelProps> = ({ onSubmit, status, va
 
       <form onSubmit={handleSubmit} className="w-full">
         {mode === 'simple' && (
-            <div className="relative flex items-center max-w-4xl mx-auto">
-                <input
-                  type="text"
-                  value={description}
-                  onChange={(e) => setDescription(e.target.value)}
-                  placeholder="Describe your song idea..."
-                  className="w-full h-20 bg-[#171717] border border-zinc-800 rounded-3xl pl-8 pr-48 text-lg text-white placeholder-zinc-500 focus:outline-none focus:border-pink-500 shadow-2xl transition-all"
-                />
-                <div className="absolute right-3 top-3 bottom-3 flex items-center gap-2">
-                    <button type="button" onClick={handleSurpriseMe} className="h-full px-4 text-zinc-500 hover:text-pink-400 hover:bg-zinc-800 rounded-2xl transition-all"><DiceIcon className="w-6 h-6" /></button>
-                    <button type="submit" disabled={isGenerating || !description.trim()} className="h-full px-8 bg-gradient-to-r from-pink-600 to-purple-600 text-white rounded-2xl font-black text-sm uppercase tracking-widest hover:from-pink-500 hover:to-purple-500 transition-all shadow-lg shadow-pink-600/30 active:scale-95">
-                        {isGenerating ? "Creating..." : "Create"}
-                    </button>
+            <div className="max-w-4xl mx-auto space-y-4">
+                <div className="relative flex items-center">
+                    <input
+                    type="text"
+                    value={description}
+                    onChange={(e) => setDescription(e.target.value)}
+                    placeholder="Describe your song idea..."
+                    className="w-full h-20 bg-[#171717] border border-zinc-800 rounded-3xl pl-8 pr-48 text-lg text-white placeholder-zinc-500 focus:outline-none focus:border-pink-500 shadow-2xl transition-all"
+                    />
+                    <div className="absolute right-3 top-3 bottom-3 flex items-center gap-2">
+                        <button type="button" onClick={handleSurpriseMe} className="h-full px-4 text-zinc-500 hover:text-pink-400 hover:bg-zinc-800 rounded-2xl transition-all"><DiceIcon className="w-6 h-6" /></button>
+                        <button type="submit" disabled={isGenerating || !description.trim()} className="h-full px-8 bg-gradient-to-r from-pink-600 to-purple-600 text-white rounded-2xl font-black text-sm uppercase tracking-widest hover:from-pink-500 hover:to-purple-500 transition-all shadow-lg shadow-pink-600/30 active:scale-95">
+                            {isGenerating ? "Creating..." : "Create"}
+                        </button>
+                    </div>
+                </div>
+                <div className="max-w-xs mx-auto">
+                    <VersionSelector />
                 </div>
             </div>
         )}
@@ -140,6 +178,7 @@ export const ControlPanel: React.FC<ControlPanelProps> = ({ onSubmit, status, va
                             ))}
                         </div>
                     </div>
+                    <VersionSelector />
                 </div>
 
                 <div className="space-y-8">
@@ -190,6 +229,7 @@ export const ControlPanel: React.FC<ControlPanelProps> = ({ onSubmit, status, va
                              <label className="text-[10px] font-black text-zinc-600 uppercase tracking-widest ml-1">Song Title</label>
                              <input type="text" value={customTitle} onChange={(e) => setCustomTitle(e.target.value)} placeholder="Untitled Track" className="w-full h-14 bg-zinc-900 border border-zinc-800 rounded-2xl px-5 text-sm" />
                          </div>
+                         <VersionSelector />
                          <div className="flex-1 flex flex-col justify-end gap-3">
                              <button type="submit" disabled={isGenerating} className="w-full h-16 bg-gradient-to-r from-pink-600 to-purple-600 text-white rounded-2xl font-black text-sm uppercase tracking-widest hover:from-pink-500 hover:to-purple-500 transition-all shadow-xl shadow-pink-600/30 active:scale-95">
                                  {isGenerating ? "Processing..." : "Compose Music"}

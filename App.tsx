@@ -32,7 +32,6 @@ const App: React.FC = () => {
         setCredits(prev => Math.max(prev, 50));
         localStorage.setItem('masum_last_date', today);
     }
-    // Set logged in by default for a smoother experience on public pages
     setIsLoggedIn(true); 
   }, []);
 
@@ -73,7 +72,8 @@ const App: React.FC = () => {
                 lyrics: [],
                 language: "Auto",
                 topic: request.topic,
-                tempo: request.tempo || 120
+                tempo: request.tempo || 120,
+                version: request.version
             },
             createdAt: timestamp,
             status: 'generating_lyrics'
@@ -87,9 +87,9 @@ const App: React.FC = () => {
         try {
             let songData;
             if (request.mode === 'custom') {
-                songData = await analyzeCustomLyrics(request.customLyrics || '', request.genre || '', request.topic || '', request.autoEnhance || false);
+                songData = await analyzeCustomLyrics(request.customLyrics || '', request.genre || '', request.topic || '', request.version, request.autoEnhance || false);
             } else {
-                songData = await generateSongLyrics(request.topic || '', request.genre || 'Auto-Detect', request.mood || 'Auto-Detect', request.language || 'Bengali');
+                songData = await generateSongLyrics(request.topic || '', request.genre || 'Auto-Detect', request.mood || 'Auto-Detect', request.language || 'Bengali', request.version);
             }
             songData.title = song.data.title; 
             songData.topic = request.topic;
@@ -135,7 +135,8 @@ const App: React.FC = () => {
         genre: activeSong.data.style,
         mood: activeSong.data.mood,
         language: 'Auto',
-        tempo: activeSong.data.tempo
+        tempo: activeSong.data.tempo,
+        version: activeSong.data.version || 3
     };
     handleGenerate(newRequest);
   };
@@ -249,6 +250,8 @@ const App: React.FC = () => {
                                   <span>{activeSong.data.style}</span>
                                   <span>•</span>
                                   <span>{activeSong.data.tempo || 120} BPM</span>
+                                  <span>•</span>
+                                  <span>V{activeSong.data.version || 3}</span>
                               </div>
                           </div>
                           <div className="bg-zinc-900/50 rounded-3xl p-5 border border-zinc-800 shadow-xl">
@@ -296,7 +299,10 @@ const App: React.FC = () => {
                                           <h3 className="font-bold text-white truncate text-lg">{song.data.title}</h3>
                                           <div className="flex justify-between items-center mt-2">
                                             <p className="text-xs text-zinc-500 font-medium truncate">{song.data.style}</p>
-                                            <span className="text-[9px] font-black text-pink-500/60 uppercase tracking-widest">{song.data.tempo || 120} BPM</span>
+                                            <div className="flex items-center gap-2">
+                                                <span className="text-[9px] font-black text-pink-500/60 uppercase tracking-widest">{song.data.tempo || 120} BPM</span>
+                                                <span className="text-[9px] font-black text-zinc-500">V{song.data.version || 3}</span>
+                                            </div>
                                           </div>
                                       </div>
                                   </div>

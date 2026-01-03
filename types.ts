@@ -10,8 +10,9 @@ export interface SongData {
   mood: string;
   lyrics: SongSection[];
   language: string;
-  tempo?: number; // New field for BPM
+  tempo?: number;
   topic?: string;
+  version?: number; // Added version field
 }
 
 export interface GeneratedSong {
@@ -33,12 +34,13 @@ export enum GenerationState {
 }
 
 export interface SongRequest {
-  mode: 'ai' | 'custom' | 'studio'; // Added 'studio' mode
+  mode: 'ai' | 'custom' | 'studio';
   topic?: string;
   customLyrics?: string;
   genre?: string;
   mood?: string;
   language?: string;
-  tempo?: number; // Added tempo for request
+  tempo?: number;
+  version: number; // Required version field
   autoEnhance?: boolean;
 }
